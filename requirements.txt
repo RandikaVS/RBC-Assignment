@@ -1,0 +1,13 @@
+fastapi[standard]
+uvicorn
+elasticsearch
+psutil
+pydantic-settings
+python-multipart
+pydantic
+python-dotenv
+requests
+pytest
+pytest-asyncio
+ansible
+pandas

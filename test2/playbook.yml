@@ -1,0 +1,48 @@
+- name: RBC Application Monitoring Tasks
+  hosts: all_servers
+  gather_facts: yes
+  vars:
+    alert_email: "sahanrandika28@gmail.com"
+
+  tasks:
+
+    - name: Print current action
+      debug:
+        msg: "Running action={{ action }} on {{ inventory_hostname }}"
+
+    # -------------------------------
+    - name: Verify installation of httpd (simulated)
+      debug:
+        msg: "Would check/install httpd on host1"
+      when:
+        - action == "verify_install"
+        - inventory_hostname == "host1"
+
+    # -------------------------------
+    - name: Check disk usage
+      shell: df -h / | tail -1 | awk '{print $5}' | sed 's/%//'
+      register: disk_usage
+      changed_when: false
+      when: action == "check-disk"
+
+    - name: Send disk alert email (simulated)
+      debug:
+        msg: "Disk usage is {{ disk_usage.stdout }}% on {{ inventory_hostname }}. Alert sent to {{ alert_email }}"
+      when:
+        - action == "check-disk"
+        - disk_usage.stdout | int > 80
+
+    # -------------------------------
+    - name: Get application status from FASTAPI
+      uri:
+        url: "http://localhost:8000/v1/healthcheck"
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: app_status
+      when: action == "check-status"
+
+    - name: Show application status
+      debug:
+        msg: "{{ app_status.content }}"
+      when: action == "check-status"

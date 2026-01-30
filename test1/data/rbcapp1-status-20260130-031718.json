@@ -1,0 +1,26 @@
+{
+  "application_name": "rbcapp1",
+  "application_status": "DOWN",
+  "host_name": "Sahans-MacBook-Air.local",
+  "timestamp": "2026-01-30T03:17:18.192088Z",
+  "dependent_services": [
+    {
+      "service_name": "httpd",
+      "service_status": "DOWN",
+      "host_name": "Sahans-MacBook-Air.local",
+      "timestamp": "2026-01-30T03:17:18.110413Z"
+    },
+    {
+      "service_name": "rabbitmq-server",
+      "service_status": "DOWN",
+      "host_name": "Sahans-MacBook-Air.local",
+      "timestamp": "2026-01-30T03:17:18.141598Z"
+    },
+    {
+      "service_name": "postgresql",
+      "service_status": "UP",
+      "host_name": "Sahans-MacBook-Air.local",
+      "timestamp": "2026-01-30T03:17:18.159860Z"
+    }
+  ]
+}
