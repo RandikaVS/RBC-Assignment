@@ -29,7 +29,7 @@ The service runs on FastAPI.
 
 ```bash
 cd test1
-uvicorn main:app --reload
+fastapi dev main.py
 ```
 
 The API will be available at:
@@ -65,7 +65,7 @@ This solution uses Ansible playbooks to manage services and check system status.
 
    ```bash
    cd test2
-   ansible-playbook playbook.yml -i inventory.ini -e action=verify_install --ask-become-pass
+   ansible-playbook playbook.yml -i inventory.ini -e action=verify_install
    ```
 
 2. **Check Disk Usage**:
