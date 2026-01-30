@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
 
+import requests
 import json
 import subprocess
 import socket
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
+
+from src.config.settings import settings
 
 
 class ServiceMonitor:
     
-    def __init__(self, services: List[str], output_dir: str = "test1/data"):
+    def __init__(self, services: List[str], output_dir: str = settings.output_dir, api_url: str = settings.api_url):
         self.services = services
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.hostname = socket.gethostname()
+        self.api_url = api_url
     
     def check_service_status(self, service_name: str) -> str:
         try:
@@ -102,6 +106,23 @@ class ServiceMonitor:
                 return "DOWN"
         return "UP"
     
+    def upload_status(self, filepath: str):
+
+        try:
+            with open(filepath, 'rb') as f:
+                files = {'file': (Path(filepath).name, f, 'application/json')}
+                response = requests.post(self.api_url, files=files, timeout=5)
+                
+            if response.status_code == 201:
+                print(f"Successfully uploaded {filepath} to API")
+            else:
+                print(f"Failed to upload {filepath}. Status: {response.status_code}")
+                
+        except requests.exceptions.ConnectionError:
+            print(f"Could not connect to API at {self.api_url}. Is the server running?")
+        except Exception as e:
+            print(f"Error uploading file: {e}")
+
     def monitor_all_services(self) -> List[Dict]:
 
         results = []
@@ -110,7 +131,10 @@ class ServiceMonitor:
             print(f"Checking service: {service}")
             status = self.check_service_status(service)
             payload = self.create_service_payload(service, status)
-            self.write_status_to_file(service, payload)
+            filepath = self.write_status_to_file(service, payload)
+            
+            self.upload_status(filepath)
+            
             results.append(payload)
         
         app_status = self.check_application_status()
@@ -122,7 +146,9 @@ class ServiceMonitor:
             "dependent_services": results
         }
         
-        self.write_status_to_file("rbcapp1", app_payload)
+        app_filepath = self.write_status_to_file("rbcapp1", app_payload)
+        self.upload_status(app_filepath)
+        
         results.append(app_payload)
         
         return results

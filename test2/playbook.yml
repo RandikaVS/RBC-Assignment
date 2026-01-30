@@ -5,15 +5,24 @@
     alert_email: "sahanrandika28@gmail.com"
 
   tasks:
-
     - name: Print current action
       debug:
         msg: "Running action={{ action }} on {{ inventory_hostname }}"
 
     # -------------------------------
-    - name: Verify installation of httpd (simulated)
+    # -------------------------------
+    - name: Verify installation of httpd
+      package:
+        name: httpd
+        state: present
+      become: yes
+      when:
+        - action == "verify_install"
+        - inventory_hostname == "host1"
+
+    - name: Confirm installation (debug)
       debug:
-        msg: "Would check/install httpd on host1"
+        msg: "httpd ensure installed on {{ inventory_hostname }}"
       when:
         - action == "verify_install"
         - inventory_hostname == "host1"
@@ -25,7 +34,19 @@
       changed_when: false
       when: action == "check-disk"
 
-    - name: Send disk alert email (simulated)
+    - name: Send disk alert email
+      community.general.mail:
+        host: localhost
+        port: 25
+        to: "{{ alert_email }}"
+        subject: "Disk Space Alert on {{ inventory_hostname }}"
+        body: "Disk usage is {{ disk_usage.stdout }}% which consumes > 80%."
+      when:
+        - action == "check-disk"
+        - disk_usage.stdout | int > 80
+      ignore_errors: yes
+
+    - name: Send disk alert email (debug)
       debug:
         msg: "Disk usage is {{ disk_usage.stdout }}% on {{ inventory_hostname }}. Alert sent to {{ alert_email }}"
       when:

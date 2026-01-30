@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     api_v1_prefix: str = "/api/v1"
     debug: bool = True
+
+    api_url: str = "http://localhost:8000/v1/add"
+    output_dir: str = "test1/data"
     
     elasticsearch_hosts: List[str] = ["http://localhost:9200"]
     elasticsearch_index: str = "service-status"
