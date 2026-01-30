@@ -69,16 +69,7 @@ class ServiceMonitor:
             return "UP"
     
     def create_service_payload(self, service_name: str, status: str) -> Dict:
-        """
-        Create JSON payload for a service
-        
-        Args:
-            service_name: Name of the service
-            status: Status of the service (UP/DOWN)
-            
-        Returns:
-            Dictionary with service information
-        """
+
         return {
             "service_name": service_name,
             "service_status": status,
