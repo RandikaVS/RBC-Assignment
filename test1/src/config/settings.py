@@ -1,6 +1,9 @@
 from pydantic_settings import BaseSettings
 from typing import List, Dict
+import os
+from dotenv import load_dotenv
 
+load_dotenv(verbose=True)
 
 class Settings(BaseSettings):
     
@@ -13,8 +16,8 @@ class Settings(BaseSettings):
     port: int = 9200
     elasticsearch_index: str = "service-status"
 
-    elasticsearch_url: str = "https://af5d3188fa7a49b48315c0271fcaee48.us-central1.gcp.cloud.es.io:443"
-    elasticsearch_api_key: str = "bzBCdkRwd0J0Ukt1WjhremxTcks6cWJuS0MweXZxZENaak9nWXpTMTNKdw=="
+    elasticsearch_url: str = os.environ.get('ELASTICSEARCH_URL')
+    elasticsearch_api_key: str = os.environ.get('ELASTICSEARCH_API_KEY')
     
     application_name: str = "rbcapp1"
     
