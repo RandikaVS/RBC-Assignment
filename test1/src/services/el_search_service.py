@@ -2,19 +2,19 @@ from datetime import datetime
 from typing import List, Dict, Optional
 from elasticsearch import Elasticsearch, NotFoundError
 from src.config.logger import logger
-
+from src.config.settings import settings
 
 class ElasticsearchServiceNew:
     
-    def __init__(self, hosts: List[str], index_name: str = "service-status"):
+    def __init__(self, host: str, api_key: str, index_name: str = "service-status"):
 
         self.index_name = index_name
         
         try:
+
             self.es = Elasticsearch(
-                hosts=hosts,
-                verify_certs=False,
-                ssl_show_warn=False
+                host,
+                api_key=api_key
             )
             
             if self.es.ping():
@@ -66,7 +66,6 @@ class ElasticsearchServiceNew:
 
         if self.es:
             try:
-                # Add timestamp if not present
                 if 'timestamp' not in document:
                     document['timestamp'] = datetime.utcnow().isoformat() + "Z"
                 
@@ -84,7 +83,6 @@ class ElasticsearchServiceNew:
                 logger.__error__(f"Error indexing document: {e}")
                 return {"success": False, "error": str(e)}
         else:
-            # Mock mode
             document['_id'] = f"mock-{len(self.mock_storage)}"
             document['timestamp'] = document.get('timestamp', datetime.utcnow().isoformat() + "Z")
             self.mock_storage.append(document)
@@ -108,8 +106,8 @@ class ElasticsearchServiceNew:
                         "size": 100
                     }
                 )
-                
                 return [hit["_source"] for hit in response["hits"]["hits"]]
+
             except NotFoundError:
                 logger.__warning__(f"Index {self.index_name} not found")
                 return []
@@ -169,10 +167,9 @@ class ElasticsearchServiceNew:
     
     def get_application_status(self, app_name: str = "rbcapp1") -> Dict:
        
-        services = ['httpd', 'rabbitmq-server', 'postgresql']
         down_services = []
         
-        for service in services:
+        for service in settings.services:
             status = self.get_service_by_name(service)
             if not status or status.get('service_status') == 'DOWN':
                 down_services.append(service)

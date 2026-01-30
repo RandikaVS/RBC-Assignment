@@ -43,17 +43,6 @@ def create_app():
             status = result.get('status')
             logger.__info__(f"{name}: {status}")
 
-    @app.get("/")
-    def health_check():
-        return {"status": "ok"}
-
-    @app.exception_handler(Exception)
-    async def exception_handler(request, exc):
-        logger.__error__(f"Global exception: {exc}")
-        return JSONResponse(
-            status_code=500,
-            content={"detail": "Internal server error"}
-        )
 
     return app
 

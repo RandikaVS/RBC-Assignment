@@ -8,11 +8,14 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     api_v1_prefix: str = "/api/v1"
     debug: bool = True
-    
-    elasticsearch_hosts: List[str] = ["http://localhost:9200"]
+
+    host: str = "localhost"
+    port: int = 9200
     elasticsearch_index: str = "service-status"
+
+    elasticsearch_url: str = "https://af5d3188fa7a49b48315c0271fcaee48.us-central1.gcp.cloud.es.io:443"
+    elasticsearch_api_key: str = "bzBCdkRwd0J0Ukt1WjhremxTcks6cWJuS0MweXZxZENaak9nWXpTMTNKdw=="
     
-    monitored_services: List[str] = ["httpd", "rabbitmq-server", "postgresql"]
     application_name: str = "rbcapp1"
     
     cors_origins: List[str] = ["*"]

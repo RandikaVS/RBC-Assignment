@@ -23,7 +23,16 @@ class ElasticsearchService:
             with self._lock:
                 if not self._initialized:
                     self.index_name = settings.elasticsearch_index
-                    self.es = Elasticsearch(hosts=settings.elasticsearch_hosts)
+                    self.es = Elasticsearch(
+                        [
+                            {
+                                "host": settings.host,
+                                "port": settings.port,
+                                "scheme": "http"
+                            }
+                        ],
+                        timeout=30,
+                        )
                     self._initialized = True
                     self.mock_storage: List[Dict] = []
                     logger.__info__("Successfully connected to Elasticsearch")

@@ -11,3 +11,4 @@ pytest
 pytest-asyncio
 ansible
 pandas
+nest_asyncio

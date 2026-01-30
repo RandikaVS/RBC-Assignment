@@ -17,7 +17,8 @@ router = APIRouter(prefix="/v1", tags=["Test1v1"])
 
 
 es_service_new = ElasticsearchServiceNew(
-    hosts=settings.elasticsearch_hosts,
+    host=settings.elasticsearch_url,
+    api_key=settings.elasticsearch_api_key,
     index_name=settings.elasticsearch_index
 )
 
@@ -31,6 +32,7 @@ async def add_service_status(file: UploadFile = File(...)):
 
         
         if "service_name" in data or "application_name" in data:
+
             result = es_service_new.index_document(data)
             
             if result["success"]:
@@ -70,8 +72,6 @@ async def get_all_health_status():
             name = service.get('service_name') or service.get('application_name')
             if name and name not in service_map:
                 service_map[name] = service
-
-        
         
         return HealthCheckResponse(
             status=app_status['application_status'],  
