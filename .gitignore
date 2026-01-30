@@ -1,3 +1,6 @@
 venv
 test1/data/*.json
+test1/data/
 test3/sales_below_avg.csv
+__pycache__/
+*.pyc
